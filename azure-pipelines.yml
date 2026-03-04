@@ -9,7 +9,7 @@ pool:
 
 variables:
   repoUrl: 'https://github.com/souravb-smu/odoo17.git'
-  updateScript: '/opt/odoo17/update_code.sh'
+  updateScript: '/home/azureuser/deploy-temp/update_code.sh'
   stagePath: '/home/azureuser/'
 
 stages:
@@ -54,7 +54,8 @@ stages:
               sshEndpoint: 'ssh-odoo17'
               runOptions: commands
               commands: |
-                sudo $(updateScript)
+                echo "$(STAGINGUSERPASSWORD)" | sudo -S -p '' chmod +x $(updateScript)
+                echo "$(STAGINGUSERPASSWORD)" | sudo -S -p '' $(updateScript)
 
 
 # =========================
@@ -97,4 +98,5 @@ stages:
               sshEndpoint: 'ssh-odoo17-production'
               runOptions: commands
               commands: |
-                sudo $(updateScript)
+                echo "$(STAGINGUSERPASSWORD)" | sudo -S -p '' chmod +x $(updateScript)
+                echo "$(STAGINGUSERPASSWORD)" | sudo -S -p '' $(updateScript)
