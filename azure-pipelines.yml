@@ -55,8 +55,8 @@ stages:
               sshEndpoint: 'ssh-odoo17'
               runOptions: commands
               commands: |
-                echo "$(shellpassword)" | sudo -S chmod +x $(updateScript)
-                echo "$(shellpassword)" | sudo -S $(updateScript)
+                echo '${{ variables.shellpassword }}' | sudo -S chmod +x $(updateScript)
+                echo '${{ variables.shellpassword }}' | sudo -S $(updateScript)
 
 
 # =========================
@@ -99,5 +99,5 @@ stages:
               sshEndpoint: 'ssh-odoo17-production'
               runOptions: commands
               commands: |
-                echo "$(shellpassword)" | sudo -S chmod +x $(updateScript)
-                echo "$(shellpassword)" | sudo -S $(updateScript)
+                echo '${{ variables.shellpassword }}' | sudo -S chmod +x $(updateScript)
+                echo '${{ variables.shellpassword }}' | sudo -S $(updateScript)
