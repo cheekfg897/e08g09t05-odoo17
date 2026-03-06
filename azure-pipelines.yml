@@ -112,7 +112,6 @@ stages:
               commands: |
                 set -e
                 export PGPASSWORD=$(DB_PASSWORD)
-                export PGPASSWORD=$(DB_PASSWORD)
                 export dbUser=$(dbUser)
                 export dbName=$(dbName)
                 cd $(stagePath)/deploy-temp
