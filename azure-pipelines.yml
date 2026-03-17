@@ -93,7 +93,6 @@ stages:
                 rm -f .DS_Store
                 rm -rf .github
 
-
           # Run update script
           - task: SSH@0
             displayName: "Run Update Script - Production"
