@@ -1,0 +1,121 @@
+services:
+  # ── Odoo (ESMOS Production) ──────────────────────────────────
+  odoo:
+    image: odoo:17.0
+    container_name: esmos-odoo
+    depends_on:
+      odoo-db:
+        condition: service_healthy
+    ports:
+      - "8069:8069"
+    volumes:
+      - odoo-data:/var/lib/odoo
+      - ./addons:/mnt/extra-addons
+      - ./odoo.conf:/etc/odoo/odoo.conf:ro
+    environment:
+      - HOST=odoo-db
+      - PORT=5432
+      - USER=odoo
+      - PASSWORD=odoo
+    networks:
+      - esmos-net
+    restart: unless-stopped
+
+  # ── PostgreSQL (Odoo DB) ─────────────────────────────────────
+  odoo-db:
+    image: postgres:15
+    container_name: esmos-odoo-db
+    environment:
+      - POSTGRES_USER=odoo
+      - POSTGRES_PASSWORD=odoo
+      - POSTGRES_DB=postgres
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - odoo-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - esmos-net
+    restart: unless-stopped
+
+  # ── Moodle (Training Platform) ───────────────────────────────
+  moodle:
+    build:
+      context: ./moodle
+      dockerfile: Dockerfile
+    container_name: esmos-moodle
+    depends_on:
+      moodle-db:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+    volumes:
+      - moodle-data:/var/www/html
+      - moodledata:/var/www/moodledata
+    environment:
+      - MOODLE_DB_TYPE=mysqli
+      - MOODLE_DB_HOST=moodle-db
+      - MOODLE_DB_PORT=3306
+      - MOODLE_DB_NAME=moodle
+      - MOODLE_DB_USER=moodle
+      - MOODLE_DB_PASS=moodlepass
+      - MOODLE_SITE_URL=http://localhost:8080
+      - MOODLE_SITE_FULLNAME=ESMOS Training
+      - MOODLE_SITE_SHORTNAME=ESMOS
+      - MOODLE_ADMIN_USER=admin
+      - MOODLE_ADMIN_PASS=Admin1234!
+      - MOODLE_ADMIN_EMAIL=admin@esmos.internal
+    networks:
+      - esmos-net
+    restart: unless-stopped
+
+  # ── MariaDB (Moodle DB) ─────────────────────────────────────
+  moodle-db:
+    image: mariadb:10.6
+    container_name: esmos-moodle-db
+    environment:
+      - MARIADB_ROOT_PASSWORD=rootpass
+      - MARIADB_DATABASE=moodle
+      - MARIADB_USER=moodle
+      - MARIADB_PASSWORD=moodlepass
+      - MARIADB_CHARACTER_SET=utf8mb4
+      - MARIADB_COLLATE=utf8mb4_unicode_ci
+    volumes:
+      - moodle-db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - esmos-net
+    restart: unless-stopped
+
+  # ── Nginx (Reverse Proxy) ───────────────────────────────────
+  nginx:
+    image: nginx:stable
+    container_name: esmos-nginx
+    depends_on:
+      - odoo
+      - moodle
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    networks:
+      - esmos-net
+    restart: unless-stopped
+
+volumes:
+  odoo-data:
+  odoo-db-data:
+  moodle-data:
+  moodledata:
+  moodle-db-data:
+
+networks:
+  esmos-net:
+    driver: bridge
