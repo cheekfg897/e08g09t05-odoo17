@@ -22,16 +22,21 @@ RUN { \
         echo 'opcache.enable = 1'; \
     } >> /usr/local/etc/php/php.ini
 
+# ─── Apache vhost: serve from /var/www/moodle/public ─────────────────────────
+COPY apache-vhost.conf /etc/apache2/sites-available/moodle.conf
+RUN a2dissite 000-default && a2ensite moodle
+
 # ─── Copy Moodle 5.1.3 source ────────────────────────────────────────────────
-COPY src/ /var/www/html/
-RUN chown -R www-data:www-data /var/www/html
+# Moodle 5.x layout: web root is public/, real config.php lives one level up
+COPY src/ /var/www/moodle/
+RUN chown -R www-data:www-data /var/www/moodle
 
 # ─── Moodle data directory ────────────────────────────────────────────────────
 RUN mkdir -p /var/www/moodledata \
     && chown www-data:www-data /var/www/moodledata
 
 # ─── Config template + entrypoint ────────────────────────────────────────────
-COPY config.php.template /var/www/html/config.php.template
+COPY config.php.template /var/www/moodle/config.php.template
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
