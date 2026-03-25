@@ -15,9 +15,9 @@ services:
     networks:
       - esmos
 
-  # ─── Odoo 16.0 ───────────────────────────────────────────────────────────────
+  # ─── Odoo 17.0 ───────────────────────────────────────────────────────────────
   odoo:
-    image: odoo:16.0
+    image: odoo:17.0
     restart: unless-stopped
     depends_on:
       - postgres
@@ -27,7 +27,7 @@ services:
       USER: odoo
       PASSWORD: ${ODOO_DB_PASSWORD}
     volumes:
-      - /data/odoo/addons:/mnt/extra-addons
+      - ./custom-addons/helpdesk:/mnt/extra-addons
       - /data/odoo/filestore:/var/lib/odoo
     networks:
       - esmos
