@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-DEPLOY_DIR="/home/azureuser/deploy-temp"
+DEPLOY_DIR="/home/azureuser/e08g09t05-odoo17"
 ENV_FILE="/home/azureuser/.env"
 
 echo "[1] Navigating to deploy directory"

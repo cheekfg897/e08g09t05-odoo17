@@ -9,7 +9,7 @@ pool:
 
 variables:
   repoUrl: 'https://github.com/cheekfg897/e08g09t05-odoo17'
-  updateScript: '/home/azureuser/deploy-temp/update_code.sh'
+  updateScript: '/home/azureuser/e08g09t05-odoo17/update_code.sh'
   stagePath: '/home/azureuser/'
 
 stages:
@@ -39,14 +39,15 @@ stages:
                 set -e
                 echo "Deploying branch: $(Build.SourceBranchName)"
                 cd $(stagePath)
-                echo "$(STAGINGUSERPASSWORD)" | sudo -S -p '' rm -rf /tmp/deploy-temp-old 2>/dev/null || true
-                mv deploy-temp /tmp/deploy-temp-old 2>/dev/null || true
-                rm -rf *-odoo17
-
-                git clone -b Staging $(repoUrl) --quiet
-                mv *-odoo17 deploy-temp
-
-                cd deploy-temp
+                if [ -d "e08g09t05-odoo17/.git" ]; then
+                  cd e08g09t05-odoo17
+                  git fetch origin --quiet
+                  git reset --hard origin/Staging
+                  git clean -fd
+                else
+                  git clone -b Staging $(repoUrl) e08g09t05-odoo17 --quiet
+                  cd e08g09t05-odoo17
+                fi
                 rm -f .DS_Store
                 rm -rf .github
 
@@ -86,14 +87,15 @@ stages:
                 set -e
                 echo "Deploying branch: $(Build.SourceBranchName)"
                 cd $(stagePath)
-                echo "$(STAGINGUSERPASSWORD)" | sudo -S -p '' rm -rf /tmp/deploy-temp-old 2>/dev/null || true
-                mv deploy-temp /tmp/deploy-temp-old 2>/dev/null || true
-                rm -rf *-odoo17
-
-                git clone -b master $(repoUrl) --quiet
-                mv *-odoo17 deploy-temp
-
-                cd deploy-temp
+                if [ -d "e08g09t05-odoo17/.git" ]; then
+                  cd e08g09t05-odoo17
+                  git fetch origin --quiet
+                  git reset --hard origin/master
+                  git clean -fd
+                else
+                  git clone -b master $(repoUrl) e08g09t05-odoo17 --quiet
+                  cd e08g09t05-odoo17
+                fi
                 rm -f .DS_Store
                 rm -rf .github
 
