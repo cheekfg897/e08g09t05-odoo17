@@ -39,8 +39,8 @@ stages:
                 set -e
                 echo "Deploying branch: $(Build.SourceBranchName)"
                 cd $(stagePath)
-                echo "$(STAGINGUSERPASSWORD)" | sudo -S -p '' rm -rf deploy-temp
-                rm -rf *-odoo17
+                echo "$(STAGINGUSERPASSWORD)" | sudo -S -p '' chown -R azureuser:azureuser deploy-temp 2>/dev/null || true
+                rm -rf deploy-temp *-odoo17
 
                 git clone -b Staging $(repoUrl) --quiet
                 mv *-odoo17 deploy-temp
@@ -85,8 +85,8 @@ stages:
                 set -e
                 echo "Deploying branch: $(Build.SourceBranchName)"
                 cd $(stagePath)
-                echo "$(STAGINGUSERPASSWORD)" | sudo -S -p '' rm -rf deploy-temp
-                rm -rf *-odoo17
+                echo "$(STAGINGUSERPASSWORD)" | sudo -S -p '' chown -R azureuser:azureuser deploy-temp 2>/dev/null || true
+                rm -rf deploy-temp *-odoo17
 
                 git clone -b master $(repoUrl) --quiet
                 mv *-odoo17 deploy-temp
