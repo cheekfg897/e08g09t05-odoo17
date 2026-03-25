@@ -39,15 +39,8 @@ stages:
                 set -e
                 echo "Deploying branch: $(Build.SourceBranchName)"
                 cd $(stagePath)
-                if [ -d "e08g09t05-odoo17/.git" ]; then
-                  cd e08g09t05-odoo17
-                  git fetch origin --quiet
-                  git reset --hard origin/Staging
-                  git clean -fd
-                else
-                  git clone -b Staging $(repoUrl) e08g09t05-odoo17 --quiet
-                  cd e08g09t05-odoo17
-                fi
+                git -C e08g09t05-odoo17 fetch origin --quiet && git -C e08g09t05-odoo17 reset --hard origin/Staging && git -C e08g09t05-odoo17 clean -fd || git clone -b Staging $(repoUrl) e08g09t05-odoo17 --quiet
+                cd e08g09t05-odoo17
                 rm -f .DS_Store
                 rm -rf .github
 
@@ -87,15 +80,8 @@ stages:
                 set -e
                 echo "Deploying branch: $(Build.SourceBranchName)"
                 cd $(stagePath)
-                if [ -d "e08g09t05-odoo17/.git" ]; then
-                  cd e08g09t05-odoo17
-                  git fetch origin --quiet
-                  git reset --hard origin/master
-                  git clean -fd
-                else
-                  git clone -b master $(repoUrl) e08g09t05-odoo17 --quiet
-                  cd e08g09t05-odoo17
-                fi
+                git -C e08g09t05-odoo17 fetch origin --quiet && git -C e08g09t05-odoo17 reset --hard origin/master && git -C e08g09t05-odoo17 clean -fd || git clone -b master $(repoUrl) e08g09t05-odoo17 --quiet
+                cd e08g09t05-odoo17
                 rm -f .DS_Store
                 rm -rf .github
 
